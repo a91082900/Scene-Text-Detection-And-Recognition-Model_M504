@@ -262,6 +262,17 @@ def change_degree_orientation(blur_condition, rotate_degree):
     
     return blur_condition
 
+def increase_magniture(blur_condition):
+    device = blur_condition.device
+    magnitude = blur_condition[:, 2]
+    # ------- change magnitude--------------
+    magnitude += 0.1
+    magnitude[magnitude > 1] = 1
+
+    blur_condition[:, 2] = magnitude
+
+    return blur_condition.to(device)
+
 def select_condition_strategy(blur_condition, strategy, choice_num=None, change_base=0):
     if len(strategy) == 0:
         return blur_condition
@@ -290,6 +301,8 @@ def select_condition_strategy(blur_condition, strategy, choice_num=None, change_
             new_condition = change_blur_magnitude_mean40(new_condition)
     elif 'M10' in strategy:
         new_condition = change_blur_magnitude_mean10(new_condition)
+    elif 'M+' in strategy:
+        new_condition = increase_magniture(new_condition)
 
     # ------- change orientation--------------
     if 'ALLO' in strategy:

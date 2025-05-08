@@ -160,7 +160,12 @@ def generate_dataset(model, dir_path, dataset, sample_timesteps, strategySetting
                 if 'FIXED' in strategySetting:
                     choice_num = index
                 if 'TURN' in strategySetting:
-                    strategy = [strategy_list[(idx + index) % len(strategy_list)]]
+                    # strategy = [strategy_list[(idx + index) % len(strategy_list)]]
+                    strategy = []
+                    for i in range(len(strategy_list)):
+                        if index & (1 << i):
+                            strategy.append(strategy_list[i])
+                    # print(f"use strategy: {strategy}")
                 new_flow = select_condition_strategy(flow, strategy=strategy, choice_num=choice_num, change_base=change_base)#, strategy
                 condition = torch.cat([sharp, new_flow], dim=1)
                 output = model.sample(condition=condition, sample_timesteps=sample_timesteps, device=device)
@@ -194,7 +199,7 @@ if __name__ == "__main__":
     parser.add_argument("--type", default='generate_dataset', type=str, choices=['generate_dataset', 'image'] + pyiqa.list_models())
     parser.add_argument("--dataset", default='train', type=str, choices=['train', 'test'])
     parser.add_argument("--val_num", default=5, type=int)
-    parser.add_argument("--strategy", default=[], type=str, choices=['O', 'M10', 'M20', 'M30', 'M40', 'M60', 'M80', 'ALLM', 'ALLO', 'RO', '30O', '60O', 'FIXED', 'TURN'], nargs='+')
+    parser.add_argument("--strategy", default=[], type=str, choices=['O', 'M10', 'M20', 'M30', 'M40', 'M60', 'M80', 'ALLM', 'ALLO', 'RO', '30O', '60O', 'FIXED', 'TURN', 'M+'], nargs='+')
     parser.add_argument("--sample_timesteps", default=20, type=int)
     parser.add_argument("--generate_num", default=5, type=int)
     parser.add_argument("--valid_iters", default=None, type=int)

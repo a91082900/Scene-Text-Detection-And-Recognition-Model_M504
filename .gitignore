@@ -8,3 +8,6 @@ SRFormer-Text-Det/checkpoint/
 SRFormer-Text-Det/output/
 TrOCR/output/
 SRFormer-Text-Det/build/
+**/__pycache__/
+ID-Blau/dataset/*
+!ID-Blau/dataset/README.md

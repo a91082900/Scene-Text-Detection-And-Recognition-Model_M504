@@ -97,6 +97,7 @@ class Flow_Loader(Dataset):
         self.flow_list = []
         self.flow_norm = flow_norm
         self.flow_norm_num = 147
+        self.mode = mode
         if crop_size:
             self.transform = transforms.Compose([RandomCrop(crop_size, crop_size), RandomFlip(), RandomRotate(), Normalize(), ToTensor()])
         else:
@@ -117,8 +118,9 @@ class Flow_Loader(Dataset):
         return len(self.flow_list)
 
     def __getitem__(self, idx):
-        blur = cv2.imread(self.blur_list[idx]).astype(np.float32)
-        blur = cv2.cvtColor(blur, cv2.COLOR_BGR2RGB)
+        if self.mode == "train":
+            blur = cv2.imread(self.blur_list[idx]).astype(np.float32)
+            blur = cv2.cvtColor(blur, cv2.COLOR_BGR2RGB)
         sharp = cv2.imread(self.sharp_list[idx]).astype(np.float32)
         sharp = cv2.cvtColor(sharp, cv2.COLOR_BGR2RGB)
         flow = np.load(self.flow_list[idx])
@@ -129,9 +131,10 @@ class Flow_Loader(Dataset):
             flow[2] = magnitude
         flow = flow.transpose((1, 2, 0))
 
-        sample = {'blur': blur,
-                  'sharp': sharp,
+        sample = {'sharp': sharp,
                   'flow': flow}
+        if self.mode == "train":
+            sample['blur'] = blur
 
         if self.transform:
             sample = self.transform(sample)
